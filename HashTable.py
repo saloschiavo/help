@@ -4,14 +4,12 @@ class HashTable:
         self.slots = [None] * self.size
 
     def put(self, item):
-        # TODO: Add method definition
         '''
         Place an item in the hash table.
         Return slot number if successful, -1 otherwise (no available slots, table is full)
         '''
-        # TODO: This may be set up for linear probing, not chaining, we have to fix that so that it works with chaining
-        # TODO: add element. if LL doesn't exist, create one and add it
-        # TODO: if LL exists, add to LL
+        # TODO: This is set up for linear probing, not chaining, we have to fix that so that it works with chaining
+        # TODO: Add element. CHAINING: if LL doesn't exist, create one and add it. if LL exists, add to LL
         hashvalue = self.hashfunction(item)
         slot_placed = -1
         # empty slot or slot contains items already
