@@ -1,6 +1,6 @@
 ---
 title: "Wine Quality"
-author: "Stefanie LoSchiavo"
+author: "First Last"
 date: "11/29/2020"
 output: html_document
 ---
@@ -39,14 +39,13 @@ plot(quality,alcohol)
 
 # TODO: GET OUT OLD NOTES AND EXAMINE THESE RESULTS
 
-# note the coefficients or least squares estimates in the first column, the SE, the t-stat, and the p-values
-# based on this p-value, the chances that B0 is not actually 0 is very small
 
 # look at all variables in lm.fit object
 names(lm.fit)
 # to examine coefficients
 coef(lm.fit)
 # confidence intervals -- by default this is 95% CI
+ci=confint(lm.fit)
 ci
 # TODO: Interpret what these numbers say
 
@@ -86,10 +85,15 @@ plot(quality, `pH`)
 plot(quality, sulphates)
 plot(quality, alcohol)
 
+names(lm.fit2)
+# to examine coefficients
+coef(lm.fit2)
+# confidence intervals -- by default this is 95% CI
+ci2=confint(lm.fit2)
+ci2
 
 # TODO: IDENTIFY AND EXAMINE OUTLIERS AND HIGH LEVERAGE POINTS
 # TODO: Can we identify what makes a white wine quality 10?
 # TODO: Can we identify what makes a white wine quality 1?
 
 ```
-
