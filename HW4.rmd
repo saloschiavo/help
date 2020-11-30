@@ -14,10 +14,8 @@ The Wage data set contains a number of other features not explored in this chapt
 
 Create plots of the results obtained, and write a summary of your findings.
 ```{r Q1}
-# Code goes here
 library(ISLR)
 data(Wage)
-library(splines)
 attach(Wage)
 plot(Wage$age, Wage$wage, col="blue")
 plot(Wage$maritl, Wage$wage, col="orange")
@@ -26,13 +24,17 @@ plot(Wage$jobclass, Wage$wage, col="yellow")
 # Married people seem to make more but is this due to marriage or age?
 # Explore this
 
+# Write a summary of your findings below:
+
 ```
+SUMMARY OF FINDINGS FROM Q1.
 
 
 ### Q2. Question 8 of Chapter 7 of the ISLR book. (Page 299).
 Fit some of the non-linear models investigated in this chapter to the Auto data set. Is there evidence for non-linear relationships in this data set? Create some informative plots to justify your answer.
 ```{r Q2}
 # Code goes here
+# Create plots to justify answer
 
 ```
 
