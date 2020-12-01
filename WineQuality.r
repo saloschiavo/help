@@ -81,12 +81,12 @@ summary(lm.fit2)
 quality_white = white$quality
 
 plot(quality_white, white$`volatile acidity`)
-plot(quality_white, `residual sugar`)
-plot(quality_white, `free sulfur dioxide`)
-plot(quality_white, `density`)
-plot(quality_white, `pH`)
-plot(quality_white, sulphates)
-plot(quality_white, alcohol)
+plot(quality_white, white$`residual sugar`)
+plot(quality_white, white$`free sulfur dioxide`)
+plot(quality_white, white$`density`)
+plot(quality_white, white$`pH`)
+plot(quality_white, white$sulphates)
+plot(quality_white, white$alcohol)
 
 names(lm.fit2)
 # to examine coefficients
