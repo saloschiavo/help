@@ -1,7 +1,7 @@
 ---
 title: "Wine Quality"
 author: "First Last"
-date: "11/29/2020"
+date: "11/27/2020"
 output: html_document
 ---
 
@@ -22,6 +22,8 @@ lm.fit=lm(quality~., data=red)
 lm.fit
 summary(lm.fit)
 
+quality_red = red$quality
+
 # It appears that the most significant variables are
 # volatile acidity
 # chlorides
@@ -29,16 +31,15 @@ summary(lm.fit)
 # sulphates
 # alcohol
 
-plot(quality,`volatile acidity`)
-plot(quality,chlorides)
-plot(quality,`total sulfur dioxide`)
-plot(quality,sulphates)
+plot(quality_red, red$`volatile acidity`, col='darkblue')
+plot(quality_red, red$chlorides)
+plot(quality_red, red$`total sulfur dioxide`)
+plot(quality_red, red$sulphates)
 
 # A higher alcohol content appears to indicate a higher quality wine
-plot(quality,alcohol)
+plot(quality_red, red$alcohol)
 
 # TODO: GET OUT OLD NOTES AND EXAMINE THESE RESULTS
-
 
 # look at all variables in lm.fit object
 names(lm.fit)
@@ -57,8 +58,8 @@ ci
 
 ```
 
-## White Wine Quality
 
+## White Wine Quality
 ```{r white}
 # import data for white wine
 #library(readr)
@@ -77,13 +78,15 @@ summary(lm.fit2)
 # pH
 # sulfates
 # alcohol
-plot(quality, `volatile acidity`)
-plot(quality, `residual sugar`)
-plot(quality, `free sulfur dioxide`)
-plot(quality, `density`)
-plot(quality, `pH`)
-plot(quality, sulphates)
-plot(quality, alcohol)
+quality_white = white$quality
+
+plot(quality_white, white$`volatile acidity`)
+plot(quality_white, `residual sugar`)
+plot(quality_white, `free sulfur dioxide`)
+plot(quality_white, `density`)
+plot(quality_white, `pH`)
+plot(quality_white, sulphates)
+plot(quality_white, alcohol)
 
 names(lm.fit2)
 # to examine coefficients
@@ -97,3 +100,4 @@ ci2
 # TODO: Can we identify what makes a white wine quality 1?
 
 ```
+
