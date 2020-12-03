@@ -11,8 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Red Wine Quality
 ```{r red}
-# import data for red wine
+# install required packages
+library(MASS)
+library(car)
 library(readr)
+# import data for red wine
 red <- read_delim("winequality-red.csv", ";", escape_double = FALSE, trim_ws = TRUE)
 View(red)
 summary(red)
@@ -36,6 +39,11 @@ plot(lm.fit)
 # Note that the Residuals Vs. Leverage graph is......... interesting
 
 quality_red = red$quality
+
+# look at distribution of quality of red wine throughout dataset
+??MSE
+
+summary(red$quality)
 
 # It appears that the most significant variables are
 # volatile acidity
@@ -79,7 +87,8 @@ outlier_indices
 # this is calculated using cook's distance
 # calculate cd for every data point
 cd=cooks.distance(lm.fit)
-cd
+# it is time-consuming to print, so we will settle for printing only the head()
+head(cd)
 # extract points where cooks distance is > 4/n for high leverage points
 
 # how many observations in data?
@@ -101,14 +110,11 @@ remove_indices
 
 # check for high collinearity
 # this can be done using vif(), in the car package
-# install car package
-library(car)
 vif(lm.fit)
 
 # vif is larger than 5 for fixed acidity and density which is problematic
 # and may indicate collinearity issues
 # consider removing these predictors
-
 
 new_red=red[-remove_indices,]
 lm.fit3=lm(quality~.,data=new_red)
@@ -185,16 +191,56 @@ ci2
 
 # IDENTIFY AND EXAMINE OUTLIERS AND HIGH LEVERAGE POINTS
 studentized_resi2 = studres(lm.fit2)
-studentized_resi2
+head(studentized_resi2)
 plot(studentized_resi2)
 
 outlier_indices2=which(abs(studentized_resi2)>3)
 outlier_indices2
 
+# calculate cd for every data point
+cd2=cooks.distance(lm.fit2)
+# it is time-consuming to print, so we will settle for printing only the head()
+head(cd2)
+# extract points where cooks distance is > 4/n for high leverage points
 
+# how many observations in data?
+n2=nrow(red)
+n2
+# 1599 observations
+leverage_indices2=which(cd>4/n)
+leverage_indices2
+# there are quite a few here, so let us compare which overlap with our outliers
+# outlier *and* high leverage points are:
+# 46, 391, 441, 460, 653, 814, 833, 1236, 1277, 1479, 1506
+# all outliers are high leverage points but not all high leverage points are outliers
+# this is consistent with what we've learned about cooks distance
+
+
+# we can combine these indices and remove both quite easily
+remove_indices2=union(outlier_indices2,leverage_indices2)
+remove_indices2
+
+# check for high collinearity
+# this can be done using vif(), in the car package
+vif(lm.fit2)
+
+# vif is larger than 5 for fixed acidity and density which is problematic
+# and may indicate collinearity issues
+# consider removing these predictors
+
+new_white=white[-remove_indices,]
+lm.fit2=lm(quality~.,data=new_white)
+summary(lm.fit2)
+
+
+
+
+# suppose we want to find the best fitting model
+# 
 
 
 # TODO: Can we identify what makes a white wine quality 10?
 # TODO: Can we identify what makes a white wine quality 1?
 
 ```
+
