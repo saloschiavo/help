@@ -1,7 +1,7 @@
 ---
 title: "Wine Quality"
-author: "First Last"
-date: "11/27/2020"
+author: "First, Last"
+date: "11/27/2020-12/4/2020"
 output: html_document
 ---
 
@@ -9,16 +9,16 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Make some interesting comments about the data set.
+# TODO: Make some interesting comments about the data set.
 
 
 ## Red Wine Quality
 ```{r red}
-# install required packages
+# Install required packages
 library(MASS)
 library(car)
 library(readr)
-# import data for red wine
+# Import data for red wine
 red <- read_delim("winequality-red.csv", ";", escape_double = FALSE, trim_ws = TRUE)
 View(red)
 summary(red)
@@ -160,18 +160,18 @@ plot(logfit)
 plot(logfit$fitted.values,logfit$residuals)
 # this is a PROBLEM, there is no random distribution here whatsoever
 
-
 # create polynomial with significant factors squared
 newfit <- lm(quality ~ poly(alcohol,2) + poly(`volatile acidity`,2) + `residual sugar` + poly(`free sulfur dioxide`,2) + chlorides + sulphates + poly(pH,2), data=new_red)
 summary(newfit)
 plot(newfit)
 
 
-
 # LASSO
+set.seed(1)
 library(glmnet)
 x <- model.matrix(quality~., new_red)[,-1]
 y <- new_red$quality
+
 lasso <- cv.glmnet(as.matrix(x), y, alpha=1)
 
 plot(lasso)
@@ -181,7 +181,19 @@ as.matrix(coef(lasso, lasso$lambda.min))
 # examine coefficients with largest lambda value within 1 standard error of min
 as.matrix(coef(lasso, lasso$lambda.1se))
 
+# define grid of values for regularizer
+L=seq(0,1,length.out = 100)
 
+# compute mse
+mse = c() ##set empty vector for mse
+##compute mse for each value of lambda
+for (i in 1:length(L)) {hb = coef(lasso,L[i])
+y_hat = cbind(1,x)%*%hb; mse[i] = mean((y_hat - y)^2)}
+# The least value of mse is obtained at the smallest value of λ when error is computed on the
+# training set
+plot(L,mse,type="l")
+
+# compute cross validation
 k = 5 ##number of folds
 n = length(y) ##number of observations
 reddat = data.frame(y=y, x=x) ##set data in data frame
@@ -205,14 +217,17 @@ for (i in 1:nlam){for (j in 1:k){
 # print all cv errors
 cv.err
 
-
 min.ind=which.min(cv.err)##index of minimum cv err
 lmin=L[min.ind]##lambda value at which minimum is attained
 hb.best=coef(lasso.mod,s=lmin)##extract best fitting model
 hb.best
 hb.best[1:10]
 
-# 5.646717 is best lambda value ???
+# 5.64 is best lambda value
+
+#plot lambda vs cv error
+plot(L,cv.err,type="l")
+
 
 
 ```
@@ -288,18 +303,20 @@ vif(lm.fit2)
 # vif is larger than 5 for fixed acidity and density which is problematic
 # and may indicate collinearity issues
 # consider removing these predictors
-
 lm.fit2=lm(quality~`volatile acidity`+`free sulfur dioxide`+`pH`+`sulphates`,data=new_white)
 summary(lm.fit2)
-
-
 
 plot(quality_white, white$`volatile acidity`)
 plot(quality_white, white$`free sulfur dioxide`)
 plot(quality_white, white$`pH`)
 plot(quality_white, white$sulphates)
 
+# TODO: Describe the relationships involved here
 
 
 ```
+# BREAKDOWN OF WORK COMPLETED
 
+Stefanie was responsible for... 
+
+Aaron was responsible for... 
