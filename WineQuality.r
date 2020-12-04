@@ -1,6 +1,6 @@
 ---
 title: "Wine Quality"
-author: "First, Last"
+author: "First Last"
 date: "11/27/2020-12/4/2020"
 output: html_document
 ---
@@ -9,7 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# TODO: Make some interesting comments about the data set.
+# TODO: Make some comments about the data set.
+# Cite the data set.
 
 
 ## Red Wine Quality
@@ -18,27 +19,27 @@ knitr::opts_chunk$set(echo = TRUE)
 library(MASS)
 library(car)
 library(readr)
-# Import data for red wine
+# Import data for red wine from csv file using ; as delimiter
 red <- read_delim("winequality-red.csv", ";", escape_double = FALSE, trim_ws = TRUE)
 View(red)
 summary(red)
 
-# using multiple linear regression to start
+# Use multiple linear regression model to start
 lm.fit=lm(quality~., data=red)
 lm.fit
-# look at all variables in lm.fit object
+# Look at all variable names in lm.fit object
 names(lm.fit)
-# summarize
+# Summarize
 summary(lm.fit)
-# note that small p-value indicates significance of multiple independent variables
+# Note that small p-value indicates significance of multiple independent variables
 
-# plot the model itself
+# Plot the model itself
 plot(lm.fit)
 
-# assign quality into its own variable
+# Assign quality into its own variable
 quality_red = red$quality
 
-# look at distribution of quality of red wine throughout dataset
+# Look at distribution of quality of red wine throughout data set
 summary(quality_red)
 
 # It appears that the most significant variables are:
@@ -52,9 +53,13 @@ plot(quality_red, red$`volatile acidity`, col='darkred')
 plot(quality_red, red$chlorides, col='darkred')
 plot(quality_red, red$`total sulfur dioxide`, col='darkred')
 plot(quality_red, red$sulphates, col='darkred')
-
-# A higher alcohol content appears to indicate a higher quality wine
 plot(quality_red, red$alcohol, col='darkred')
+
+# TODO: Consider splitting this into a text markdown cell and resuming R code after this
+# A higher alcohol content appears to indicate a higher quality wine
+
+# Note that in the cases of alcohol and volatile acidity vs quality, red wines' alcohol level between 9-12%,
+# the level of volatile acidity decreases as alcohol level increases.
 
 # TODO: INTERPRET RESULT OF R-SQUARED
 # Recall that the R-squared statistic allows us to measure how our model performed versus had we not used a model at all.
@@ -72,13 +77,14 @@ ci
 
 # Recall that F-statistic tests overall significance -- tests whether relationship is statistically significant
 
-# now let's find some outliers!
+# Identify outliers using studentized residuals
 studentized_resi = studres(lm.fit)
 head(studentized_resi)
 plot(studentized_resi)
+# Identify indices of outliers
 outlier_indices=which(abs(studentized_resi)>3)
 outlier_indices
-# so our problematic outlier rows are:
+# So our problematic outlier rows are:
 # 46, 391, 441, 460, 653, 814, 833, 900, 1236, 1277, 1479, 1506
 
 # Now to identify high leverage points:
@@ -107,32 +113,12 @@ remove_indices
 # Remove the union of both values
 new_red=red[-remove_indices,]
 
-# Check for high collinearity with vif(), featured in the car package
-vif(lm.fit)
-
-# Note that the variance inflation factors (vif) are larger than 5 for fixed acidity and density,
-# which is indicative of a problem and may indicate collinearity issues.
-# As a result, these predictors should be removed from the model.
-
-# Create a new model without fixed acidity and density due to high VIF
-lm.fit=lm(quality~`volatile acidity`+`citric acid`+`residual sugar`+chlorides+`free sulfur dioxide`+`total sulfur dioxide`+pH+sulphates+alcohol, data=red)
-lm.fit
-summary(lm.fit)
-plot(lm.fit)
-
-# Create another model for comparison, this time using only significant variables
-lm.fit=lm(quality~`volatile acidity`+chlorides+`total sulfur dioxide`+pH+sulphates+alcohol, data=red)
-lm.fit
-summary(lm.fit)
-plot(lm.fit)
-ci=confint(lm.fit)
-ci
-
-# TODO: Change the ~. here to reflect changes or just move these lines of code up
+# Rebuild multiple regression model without outliers-- THIS IS OUR BEST MODEL
+# This appears to be the best model out of all multiple linear regression models
 lm.fit3=lm(quality~.,data=new_red)
 summary(lm.fit3)
 
-# Now let us reexamine significance
+# Now let us reexamine significance.
 # The significant factors after removing outliers and high leverage points are:
 # volatile acidity
 # chlorides
@@ -140,30 +126,56 @@ summary(lm.fit3)
 # sulphates
 # alcohol
 
-# these have remained the same
 plot(lm.fit3)
+# This plot looks more reasonable, but note the funnel shape
+# in the residuals vs leverage plot. This may be an indication of heteroskedasticity.
+# As a result, let us remove the collinear predictors causing the issue
+# in an attempt to improve the model.
 
-# it looks more reasonable but NOTE THE FUNNEL SHAPE IN THE RESIDUALS VS LEVERAGE PLOT
-# This may indicate heteroskedasticity?
+# Check for high collinearity with vif(), featured in the car package
+vif(lm.fit3)
 
-# TODO: Let us remove the collinear predictors and try to improve the model.
+# Note that the variance inflation factors (vif) are larger than 5 for fixed acidity and density,
+# which is indicative of a problem and may indicate collinearity issues.
+# As a result, these predictors should be removed from the model.
 
-plot(lm.fit3$fitted.values,lm.fit3$residuals)
+# Create a new multiple linear regression model without fixed acidity and density due to high VIF
+# This was created from the dataset with outliers and high leverage points removed
+lm.fit=lm(quality~`volatile acidity`+`citric acid`+`residual sugar`+chlorides+`free sulfur dioxide`+`total sulfur dioxide`+pH+sulphates+alcohol, data=new_red)
+lm.fit
+summary(lm.fit)
+plot(lm.fit)
+ci=confint(lm.fit)
+ci
+# This model is slightly less accurate than the above model.
 
-# TODO: REMOVE THESE PREDICTORS AND RERUN?
+# Create another linear model for comparison, this time using only significant variables
+lm.fit=lm(quality~`volatile acidity`+chlorides+`total sulfur dioxide`+pH+sulphates+alcohol, data=red)
+lm.fit
+summary(lm.fit)
+plot(lm.fit)
+ci=confint(lm.fit)
+ci
+# The previous model without fixed acidity and density performs slightly better
+# than this model with only significant values present.
 
-# what if we examined it as a logarithmic model?
+
+# Exploring the option of a logarithmic model:
 logfit=lm(log(quality)~., data=new_red)
 # still maintains most significant variables
 summary(logfit)
 plot(logfit)
 plot(logfit$fitted.values,logfit$residuals)
-# this is a PROBLEM, there is no random distribution here whatsoever
+# This still appears problematic, as there is minimal random distribution present,
+# however, the residual standard error has been greatly reduced.
 
-# create polynomial with significant factors squared
+
+# Create polynomial with significant factors squared
 newfit <- lm(quality ~ poly(alcohol,2) + poly(`volatile acidity`,2) + `residual sugar` + poly(`free sulfur dioxide`,2) + chlorides + sulphates + poly(pH,2), data=new_red)
 summary(newfit)
 plot(newfit)
+# This appears to be one of the better models, as the residual standard error is 0.5622,
+# but it is still not the best fit.
 
 
 # LASSO
@@ -184,24 +196,30 @@ as.matrix(coef(lasso, lasso$lambda.1se))
 # define grid of values for regularizer
 L=seq(0,1,length.out = 100)
 
-# compute mse
-mse = c() ##set empty vector for mse
-##compute mse for each value of lambda
+# compute mean squared error
+mse = c() # initialize empty vector for mse values
+# compute mse for each value of lambda
 for (i in 1:length(L)) {hb = coef(lasso,L[i])
 y_hat = cbind(1,x)%*%hb; mse[i] = mean((y_hat - y)^2)}
-# The least value of mse is obtained at the smallest value of λ when error is computed on the
-# training set
+# The least value of mse is obtained at the smallest value of λ when error is computed on the training set
 plot(L,mse,type="l")
 
-# compute cross validation
-k = 5 ##number of folds
-n = length(y) ##number of observations
-reddat = data.frame(y=y, x=x) ##set data in data frame
-ncv = ceiling(n/k) ##calculate no. of obs. per fold
-cv.ind.f = rep(seq(1:k),ncv) ##assign fold indices
-cv.ind = cv.ind.f[1:n] ##restrict to only n observations
-cv.ind.random = sample(cv.ind,n,replace=F)## choose fold indices randomly
-#Split data into testing and training and compute cross validation error:
+# Compute all cross validation errors
+# Set number of folds
+k = 5
+# n = number of observations
+n = length(y)
+# reddat is our data frame for red wine observations and values
+reddat = data.frame(y=y, x=x)
+# Calculate number of observations per fold
+ncv = ceiling(n/k)
+# Assign indices to the folds
+cv.ind.f = rep(seq(1:k),ncv)
+# Restrict to only n observations
+cv.ind = cv.ind.f[1:n]
+# this chooses the indices randomly
+cv.ind.random = sample(cv.ind,n,replace=F)
+# Split data into testing and training to compute cross validation error:
 MSE = c(); cv.err = c(); nlam=length(L)
 for (i in 1:nlam){for (j in 1:k){
   train = reddat[cv.ind.random!=j,]; response = train$y
@@ -214,20 +232,22 @@ for (i in 1:nlam){for (j in 1:k){
   MSE[j] = mean((resp.values - fitted.values)^2)}
   cv.err[i] = mean(MSE)}
 
-# print all cv errors
+# Print all cv errors
 cv.err
 
-min.ind=which.min(cv.err)##index of minimum cv err
-lmin=L[min.ind]##lambda value at which minimum is attained
-hb.best=coef(lasso.mod,s=lmin)##extract best fitting model
+# Identify index of minimum cross validation error
+min.ind=which.min(cv.err)
+# Lambda value where the minimum error is observed
+lmin=L[min.ind]
+# Extract the best fitting model
+hb.best=coef(lasso.mod,s=lmin)
 hb.best
 hb.best[1:10]
 
-# 5.64 is best lambda value
+# 5.64 is best lambda value found
 
-#plot lambda vs cv error
+# Plot lambda vs cross validation error
 plot(L,cv.err,type="l")
-
 
 
 ```
@@ -235,8 +255,8 @@ plot(L,cv.err,type="l")
 
 ## White Wine Quality
 ```{r white}
-#import data for white wine
-#library(readr)
+# Import data for white wine
+library(readr)
 white <- read_delim("winequality-white.csv", ";", escape_double = FALSE, trim_ws = TRUE)
 View(white)
 summary(white)
@@ -269,7 +289,7 @@ coef(lm.fit2)
 ci2=confint(lm.fit2)
 ci2
 
-# IDENTIFY AND EXAMINE OUTLIERS AND HIGH LEVERAGE POINTS
+# Identify and examine outliers and high leverage points
 studentized_resi2 = studres(lm.fit2)
 head(studentized_resi2)
 plot(studentized_resi2)
@@ -317,6 +337,8 @@ plot(quality_white, white$sulphates)
 ```
 # BREAKDOWN OF WORK COMPLETED
 
-Stefanie was responsible for... 
+S was responsible for removing outliers and high leverage points, examining vif values, building the logarithmic models, as well as the LASSO model, and computing cross validation.
 
-Aaron was responsible for... 
+A was responsible for building several of the multiple linear regression models. He interpreted the results of the white wine.
+
+Both of us shared our work and thoroughly discussed our results, forming an analysis together.
