@@ -9,8 +9,18 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# TODO: Make some comments about the data set.
-# Cite the data set.
+Our analysis is based on the Wine Quality data sets (available from the UCI Machine Learning Repository), for both red and white wines.
+The red wine data set contains 12 variables, and n=1599.
+The white wine data set contains 12 variables, and n=4898.
+We set out to see if we could determine how the various chemical levels in red and white wines might affect their quality.
+Throughout the project, we explored many different potential models, each of which is outlined and examined here.
+
+
+Source:
+Paulo Cortez, University of Minho, Guimarães, Portugal, http://www3.dsi.uminho.pt/pcortez
+A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal
+@2009
+Data downloaded from https://archive.ics.uci.edu/ml/datasets/Wine+Quality
 
 
 ## Red Wine Quality
@@ -55,31 +65,22 @@ plot(quality_red, red$`total sulfur dioxide`, col='darkred')
 plot(quality_red, red$sulphates, col='darkred')
 plot(quality_red, red$alcohol, col='darkred')
 
-# TODO: Consider splitting this into a text markdown cell and resuming R code after this
-# A higher alcohol content appears to indicate a higher quality wine
-
 # Note that in the cases of alcohol and volatile acidity vs quality, red wines' alcohol level between 9-12%,
 # the level of volatile acidity decreases as alcohol level increases.
 
-# Alcohol and sulphates both have positive relationships with quality.
+# Alcohol and sulphates both have positive relationships with quality (they both increase together).
 # Note that as volatile acidity and total sulfur dioxide increase, the quality tends to decrease.
 # High levels of acetic acid tend to lower the quality of red wine as well.
 
-# TODO: INTERPRET RESULT OF R-SQUARED
 # Recall that the R-squared statistic allows us to measure how our model performed versus had we not used a model at all.
-# Note that R-squared is .3606, adjusted .3561
-# The R-squared statistic of a linear model ... implies that/means 
+# Note that R-squared is .3606, adjusted .3561, which means that our current model is not a very good fit (only roughly
+# a third of the data fits onto the model).
 
 # Let us examine coefficients
 coef(lm.fit)
 # Calculate confidence intervals -- by default, this is 95% CI
 ci=confint(lm.fit)
 ci
-
-# TODO: Interpret what these numbers say
-# I believe this is related to the relationship between variables and quality
-
-# Recall that F-statistic tests overall significance -- tests whether relationship is statistically significant
 
 # Identify outliers using studentized residuals
 studentized_resi = studres(lm.fit)
@@ -163,7 +164,6 @@ ci
 # The previous model without fixed acidity and density performs slightly better
 # than this model with only significant values present.
 
-
 # Exploring the option of a logarithmic model:
 logfit=lm(log(quality)~., data=new_red)
 # still maintains most significant variables
@@ -173,7 +173,6 @@ plot(logfit$fitted.values,logfit$residuals)
 # This still appears problematic, as there is minimal random distribution present,
 # however, the residual standard error has been greatly reduced.
 
-
 # Create polynomial with significant factors squared
 newfit <- lm(quality ~ poly(alcohol,2) + poly(`volatile acidity`,2) + `residual sugar` + poly(`free sulfur dioxide`,2) + chlorides + sulphates + poly(pH,2), data=new_red)
 summary(newfit)
@@ -181,15 +180,12 @@ plot(newfit)
 # This appears to be one of the better models, as the residual standard error is 0.5622,
 # but it is still not the best fit.
 
-
 # LASSO
 set.seed(1)
 library(glmnet)
 x <- model.matrix(quality~., new_red)[,-1]
 y <- new_red$quality
-
 lasso <- cv.glmnet(as.matrix(x), y, alpha=1)
-
 plot(lasso)
 
 # examine coefficients with minimum CV errors
@@ -286,6 +282,10 @@ plot(quality_white, white$`pH`)
 plot(quality_white, white$sulphates)
 plot(quality_white, white$alcohol)
 
+# TODO: Describe the relationships involved here -- if you could do this,
+# if you happen to have spare time, that would be amazing! This is really
+# the last thing we have left to do, I believe!
+
 names(lm.fit2)
 # to examine coefficients
 coef(lm.fit2)
@@ -301,27 +301,26 @@ plot(studentized_resi2)
 outlier_indices2=which(abs(studentized_resi2)>3)
 outlier_indices2
 
-# calculate cd for every data point
+# Calculate cd for every data point
 cd2=cooks.distance(lm.fit2)
-# it is time-consuming to print, so we will settle for printing only the head()
+# It is time-consuming to print, so we will settle for printing only the head()
 head(cd2)
-# extract points where cooks distance is > 4/n for high leverage points
+# Extract points where cooks distance is > 4/n for high leverage points
 
-# how many observations in data?
+# How many observations in data?
 n2=nrow(white)
 n2
 # 4898 observations
 leverage_indices2=which(cd>4/n)
-# there are quite a few here, so let us compare which overlap with our outliers
-# outlier *and* high leverage points are:
+# There are quite a few here, so let us compare which overlap with our outliers
+# Outlier *and* high leverage points are:
 leverage_indices2
 # we can combine these indices and remove both quite easily
 remove_indices2=union(outlier_indices2,leverage_indices2)
 remove_indices2
 new_white=white[-remove_indices,]
 
-# check for high collinearity
-# this can be done using vif(), in the car package
+# Check for high collinearity, again using vif() function
 vif(lm.fit2)
 
 # vif is larger than 5 for fixed acidity and density which is problematic
@@ -329,20 +328,17 @@ vif(lm.fit2)
 # consider removing these predictors
 lm.fit2=lm(quality~`volatile acidity`+`free sulfur dioxide`+`pH`+`sulphates`,data=new_white)
 summary(lm.fit2)
+plot(lm.fit2)
 
-plot(quality_white, white$`volatile acidity`)
-plot(quality_white, white$`free sulfur dioxide`)
-plot(quality_white, white$`pH`)
-plot(quality_white, white$sulphates)
+# Note that the R-squared statistic here still indicates a fairly weak model (just under half of
+# the provided white wine data fits onto the model). However, the standard error is quite high.
 
-# TODO: Describe the relationships involved here
-
+# TODO: If you could revise this/elaborate on the analysis, that would be fantastic.
 
 ```
-# BREAKDOWN OF WORK COMPLETED
+## CONTRIBUTIONS FROM EACH GROUP MEMBER
 
-S was responsible for removing outliers and high leverage points, examining vif values, building the logarithmic models, as well as the LASSO model, and computing cross validation.
-
+S was responsible for removing outliers and high leverage points, examining vif values,
+building the logarithmic models, as well as the LASSO model, and computing cross validation.
 A was responsible for building several of the multiple linear regression models. He interpreted the results of the white wine.
-
 Both of us shared our work and thoroughly discussed our results, forming an analysis together.
