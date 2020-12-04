@@ -61,6 +61,10 @@ plot(quality_red, red$alcohol, col='darkred')
 # Note that in the cases of alcohol and volatile acidity vs quality, red wines' alcohol level between 9-12%,
 # the level of volatile acidity decreases as alcohol level increases.
 
+# Alcohol and sulphates both have positive relationships with quality.
+# Note that as volatile acidity and total sulfur dioxide increase, the quality tends to decrease.
+# High levels of acetic acid tend to lower the quality of red wine as well.
+
 # TODO: INTERPRET RESULT OF R-SQUARED
 # Recall that the R-squared statistic allows us to measure how our model performed versus had we not used a model at all.
 # Note that R-squared is .3606, adjusted .3561
