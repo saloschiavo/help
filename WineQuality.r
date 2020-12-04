@@ -5,6 +5,13 @@ date: "11/27/2020"
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Make some interesting comments about the data set.
+
+
 ## Red Wine Quality
 ```{r red}
 # install required packages
@@ -22,23 +29,19 @@ lm.fit
 # look at all variables in lm.fit object
 names(lm.fit)
 # summarize
-
-# TODO: GET OUT OLD NOTES AND EXAMINE THESE RESULTS
-
 summary(lm.fit)
 # note that small p-value indicates significance of multiple independent variables
 
 # plot the model itself
 plot(lm.fit)
 
-# TODO: WHAT IS GOING ON WITH THESE BONKERS GRAPHS
-# Note that the Residuals Vs. Leverage graph is......... interesting
+# assign quality into its own variable
 quality_red = red$quality
 
 # look at distribution of quality of red wine throughout dataset
-summary(red$quality)
+summary(quality_red)
 
-# It appears that the most significant variables are
+# It appears that the most significant variables are:
 # volatile acidity
 # chlorides
 # total sulfur dioxide
@@ -53,20 +56,23 @@ plot(quality_red, red$sulphates, col='darkred')
 # A higher alcohol content appears to indicate a higher quality wine
 plot(quality_red, red$alcohol, col='darkred')
 
-# NOte that R-squared is .3606, adjusted .3561
 # TODO: INTERPRET RESULT OF R-SQUARED
 # Recall that the R-squared statistic allows us to measure how our model performed versus had we not used a model at all.
+# Note that R-squared is .3606, adjusted .3561
 # The R-squared statistic of a linear model ... implies that/means 
-# to examine coefficients
+
+# Let us examine coefficients
 coef(lm.fit)
-# confidence intervals -- by default this is 95% CI
+# Calculate confidence intervals -- by default, this is 95% CI
 ci=confint(lm.fit)
 ci
 
 # TODO: Interpret what these numbers say
+# I believe this is related to the relationship between variables and quality
+
 # Recall that F-statistic tests overall significance -- tests whether relationship is statistically significant
 
-# now let's find some outliers
+# now let's find some outliers!
 studentized_resi = studres(lm.fit)
 head(studentized_resi)
 plot(studentized_resi)
@@ -75,47 +81,46 @@ outlier_indices
 # so our problematic outlier rows are:
 # 46, 391, 441, 460, 653, 814, 833, 900, 1236, 1277, 1479, 1506
 
-# and high leverage points
-# this is calculated using cook's distance
-# calculate cd for every data point
+# Now to identify high leverage points:
+# Calculate Cook's Distance for every point
 cd=cooks.distance(lm.fit)
-# it is time-consuming to print, so we will settle for printing only the head()
+# It is time-consuming to print, so we will settle for printing only the head()
 head(cd)
-# extract points where cooks distance is > 4/n for high leverage points
+# Extract points where cooks distance is > 4/n for high leverage points
 
-# how many observations in data?
+# Check to see how many observations in data
 n=nrow(red)
 n
-# 1599 observations
+# n = 1599 observations
 leverage_indices=which(cd>4/n)
 leverage_indices
-# there are quite a few here, so let us compare which overlap with our outliers
-# outlier *and* high leverage points are:
+# There are quite a few high leverage points, so let us compare which overlap with our outliers
+# Outlier *and* high leverage points are:
 # 46, 391, 441, 460, 653, 814, 833, 1236, 1277, 1479, 1506
-# all outliers are high leverage points but not all high leverage points are outliers
-# this is consistent with what we've learned about cooks distance
+# Observe that all outliers are high leverage points, but not all high leverage points are outliers
+# This is consistent with what we've learned about Cook's Distance.
 
-
-# we can combine these indices and remove both quite easily
+# Now let us combine these indices from the outliers and high leverages
 remove_indices=union(outlier_indices,leverage_indices)
+# Examine indices
 remove_indices
+# Remove the union of both values
+new_red=red[-remove_indices,]
 
-# check for high collinearity
-# this can be done using vif(), in the car package
+# Check for high collinearity with vif(), featured in the car package
 vif(lm.fit)
 
-# vif is larger than 5 for fixed acidity and density which is problematic
-# and may indicate collinearity issues
-# consider removing these predictors
+# Note that the variance inflation factors (vif) are larger than 5 for fixed acidity and density,
+# which is indicative of a problem and may indicate collinearity issues.
+# As a result, these predictors should be removed from the model.
 
-# TODO: REMOVE DENSITY & FIXED ACIDITY
-# create model without fixed acidity and density due to high VIF
+# Create a new model without fixed acidity and density due to high VIF
 lm.fit=lm(quality~`volatile acidity`+`citric acid`+`residual sugar`+chlorides+`free sulfur dioxide`+`total sulfur dioxide`+pH+sulphates+alcohol, data=red)
 lm.fit
 summary(lm.fit)
 plot(lm.fit)
 
-# and once more, with only significant variables
+# Create another model for comparison, this time using only significant variables
 lm.fit=lm(quality~`volatile acidity`+chlorides+`total sulfur dioxide`+pH+sulphates+alcohol, data=red)
 lm.fit
 summary(lm.fit)
@@ -123,16 +128,12 @@ plot(lm.fit)
 ci=confint(lm.fit)
 ci
 
-new_red=red[-remove_indices,]
 # TODO: Change the ~. here to reflect changes or just move these lines of code up
 lm.fit3=lm(quality~.,data=new_red)
 summary(lm.fit3)
 
-# RERUN MODEL AFTER REMOVING THOSE HIGH VIF VARIABLES
-
-
-# now we can reexamine significance
-# significant factors after removing outliers and high leverage points are:
+# Now let us reexamine significance
+# The significant factors after removing outliers and high leverage points are:
 # volatile acidity
 # chlorides
 # total sulfur dioxide
@@ -219,7 +220,7 @@ hb.best[1:10]
 
 ## White Wine Quality
 ```{r white}
-# import data for white wine
+#import data for white wine
 #library(readr)
 white <- read_delim("winequality-white.csv", ";", escape_double = FALSE, trim_ws = TRUE)
 View(white)
@@ -268,21 +269,17 @@ head(cd2)
 # extract points where cooks distance is > 4/n for high leverage points
 
 # how many observations in data?
-n2=nrow(red)
+n2=nrow(white)
 n2
-# 1599 observations
+# 4898 observations
 leverage_indices2=which(cd>4/n)
-leverage_indices2
 # there are quite a few here, so let us compare which overlap with our outliers
 # outlier *and* high leverage points are:
-# 46, 391, 441, 460, 653, 814, 833, 1236, 1277, 1479, 1506
-# all outliers are high leverage points but not all high leverage points are outliers
-# this is consistent with what we've learned about cooks distance
-
-
+leverage_indices2
 # we can combine these indices and remove both quite easily
 remove_indices2=union(outlier_indices2,leverage_indices2)
 remove_indices2
+new_white=white[-remove_indices,]
 
 # check for high collinearity
 # this can be done using vif(), in the car package
@@ -292,15 +289,17 @@ vif(lm.fit2)
 # and may indicate collinearity issues
 # consider removing these predictors
 
-new_white=white[-remove_indices,]
-lm.fit2=lm(quality~.,data=new_white)
+lm.fit2=lm(quality~`volatile acidity`+`free sulfur dioxide`+`pH`+`sulphates`,data=new_white)
 summary(lm.fit2)
 
 
-# suppose we want to find the best fitting model
+
+plot(quality_white, white$`volatile acidity`)
+plot(quality_white, white$`free sulfur dioxide`)
+plot(quality_white, white$`pH`)
+plot(quality_white, white$sulphates)
 
 
-# TODO: Can we identify what makes a white wine quality 10?
-# TODO: Can we identify what makes a white wine quality 1?
 
 ```
+
