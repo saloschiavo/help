@@ -1,6 +1,6 @@
 ---
 title: "Wine Quality"
-author: "First Last"
+author: "First last"
 date: "11/27/2020-12/4/2020"
 output: html_document
 ---
@@ -20,6 +20,7 @@ Source:
 Paulo Cortez, University of Minho, Guimarães, Portugal, http://www3.dsi.uminho.pt/pcortez
 A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal
 @2009
+
 Data downloaded from https://archive.ics.uci.edu/ml/datasets/Wine+Quality
 
 
@@ -323,9 +324,8 @@ new_white=white[-remove_indices,]
 # Check for high collinearity, again using vif() function
 vif(lm.fit2)
 
-# vif is larger than 5 for fixed acidity and density which is problematic
-# and may indicate collinearity issues
-# consider removing these predictors
+# vif is larger than 5 for alcohol, residual sugar, and density which is problematic and may indicate collinearity issues
+# create a new model with only highest significant factors with vif < 5
 lm.fit2=lm(quality~`volatile acidity`+`free sulfur dioxide`+`pH`+`sulphates`,data=new_white)
 summary(lm.fit2)
 plot(lm.fit2)
@@ -336,9 +336,6 @@ plot(lm.fit2)
 # TODO: If you could revise this/elaborate on the analysis, that would be fantastic.
 
 ```
-## CONTRIBUTIONS FROM EACH GROUP MEMBER
+## Contributions from Each Group Member
 
-S was responsible for removing outliers and high leverage points, examining vif values,
-building the logarithmic models, as well as the LASSO model, and computing cross validation.
-A was responsible for building several of the multiple linear regression models. He interpreted the results of the white wine.
-Both of us shared our work and thoroughly discussed our results, forming an analysis together.
+S was responsible for removing outliers and high leverage points, examining vif values, building the logarithmic models, as well as the LASSO model, and computing cross validation. A was responsible for building several of the multiple linear regression models. He interpreted the results of the white wine. Both of us shared our work and thoroughly discussed our results, forming an analysis together.
