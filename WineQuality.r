@@ -1,6 +1,6 @@
 ---
 title: "Wine Quality"
-author: "First last"
+author: "First Last"
 date: "11/27/2020-12/4/2020"
 output: html_document
 ---
@@ -283,9 +283,8 @@ plot(quality_white, white$`pH`)
 plot(quality_white, white$sulphates)
 plot(quality_white, white$alcohol)
 
-# TODO: Describe the relationships involved here -- if you could do this,
-# if you happen to have spare time, that would be amazing! This is really
-# the last thing we have left to do, I believe!
+# There appears to be an indication that the more alcohol, the better the quality of the white wine.
+# Outliers exist in all plots, but for the most part, there appears to be a normal distribution in the remaining plots.
 
 names(lm.fit2)
 # to examine coefficients
@@ -302,13 +301,13 @@ plot(studentized_resi2)
 outlier_indices2=which(abs(studentized_resi2)>3)
 outlier_indices2
 
-# Calculate cd for every data point
+# Calculate Cook's distance for every data point
 cd2=cooks.distance(lm.fit2)
 # It is time-consuming to print, so we will settle for printing only the head()
 head(cd2)
 # Extract points where cooks distance is > 4/n for high leverage points
 
-# How many observations in data?
+# Calculate number of observations in data
 n2=nrow(white)
 n2
 # 4898 observations
@@ -316,7 +315,7 @@ leverage_indices2=which(cd>4/n)
 # There are quite a few here, so let us compare which overlap with our outliers
 # Outlier *and* high leverage points are:
 leverage_indices2
-# we can combine these indices and remove both quite easily
+# Combine these indices and remove both
 remove_indices2=union(outlier_indices2,leverage_indices2)
 remove_indices2
 new_white=white[-remove_indices,]
@@ -324,16 +323,15 @@ new_white=white[-remove_indices,]
 # Check for high collinearity, again using vif() function
 vif(lm.fit2)
 
-# vif is larger than 5 for alcohol, residual sugar, and density which is problematic and may indicate collinearity issues
-# create a new model with only highest significant factors with vif < 5
+# Vif is larger than 5 for alcohol, residual sugar, and density which is problematic and may indicate collinearity issues
+# Create a new model with only highest significant factors with vif < 5
 lm.fit2=lm(quality~`volatile acidity`+`free sulfur dioxide`+`pH`+`sulphates`,data=new_white)
 summary(lm.fit2)
 plot(lm.fit2)
+# Examining the multiple R-squared (0.04714), this is not a very good fit and tells us that there is no apparent relationship within the data.
 
-# Note that the R-squared statistic here still indicates a fairly weak model (just under half of
-# the provided white wine data fits onto the model). However, the standard error is quite high.
 
-# TODO: If you could revise this/elaborate on the analysis, that would be fantastic.
+
 
 ```
 ## Contributions from Each Group Member
