@@ -95,8 +95,7 @@ def __main__():
     bfsGraph = bfs(Graph, 'Kevin Bacon')
 
     while True:
-        # TODO: Handle for when there is no path between 2 actors
-        # try block goes here
+        # Handle for when there is no path between 2 actors with try/except block
         try:
             print("To quit the program, type return in answer to a question.\n")
             actorName = input("Enter the name of an actor: ")
