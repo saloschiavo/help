@@ -1,7 +1,7 @@
 ---
 title: "Wine Quality"
 author: "First Last"
-date: "11/27/2020-12/4/2020"
+date: "11/27/2020-12/10/2020"
 output: html_document
 ---
 
@@ -119,7 +119,7 @@ remove_indices
 # Remove the union of both values
 new_red=red[-remove_indices,]
 
-# Rebuild multiple regression model without outliers-- THIS IS OUR BEST MODEL
+# Rebuild multiple regression model without outliers
 # This appears to be the best model out of all multiple linear regression models
 lm.fit3=lm(quality~.,data=new_red)
 summary(lm.fit3)
@@ -180,6 +180,16 @@ summary(newfit)
 plot(newfit)
 # This appears to be one of the better models, as the residual standard error is 0.5622,
 # but it is still not the best fit.
+
+
+# Exploring other polynomial models with gam() and nested models
+library(gam)
+gam.m1=gam(quality~ns(alcohol,4),data=new_red)
+gam.m2=gam(quality~ns(alcohol,4)+ns(`volatile acidity`,4),data=new_red)
+gam.m3=gam(quality~ns(alcohol,4)+ns(`volatile acidity`,4)+ns(`residual sugar`,4),data=new_red)
+anova(gam.m1,gam.m2,gam.m3)
+# The gam.m2 appears to be the best model by far.
+
 
 # LASSO
 set.seed(1)
@@ -334,6 +344,19 @@ plot(lm.fit2)
 
 
 ```
+## Analysis of Results
+
+We set out to determine how various chemical levels in red and white wines might affect their quality. Quality was the main attribute we concentrated our research on. We started by determining which attributes were statistically significant by using a multiple linear regression model. By identifying the smallest p-values, we determined that the most significant variables are volatile acidity, chlorides, sulphates, alcohol, and total sulfur dioxide. The most interesting thing we noticed with these plots was alcohol and volatile acidity vs quality. The level of volatile acidity decreases and alcohol content increases. Also, alcohol and sulphates have a positive relationship with quality. Something else we identified with these plots was that as volatile acidity and total sulfur dioxide increase, the quality appears to decrease. High levels of acetic acid tend to lower the quality of red wine as well. The R-squared was 0.3606, which does not indicate a good fit. We then decided to examine the coefficients.
+
+The next step was to identify outliers and high leverage points. We used Cook’s Distance to identify these observations that overlapped. At this point, we built a new multiple linear regression model and reexamined the significance of the attributes. After viewing the plots from this model, they look more reasonable. There is one plot, residuals vs leverage, that has the appearance of a funnel shape. This may be an indication of heteroskedasticity and as a result, we must remove the collinear predictors causing the issue in an attempt to improve the model. Using the vif() function (variance inflation factor), fixed acidity and density had a value larger than 5, which is indicative of a problem and may indicate collinearity issues. As a result, these predictors were removed from the model. The next step was to create another new multiple linear regression model with fixed acidity and density removed. This model proved to perform better, albeit slightly. We ended up trying a polynomial model and using LASSO regression as well.
+
+Ultimately, it was difficult to find a model that fit well, and it appears that there are not necessarily strong relationships between the chemical properties and the quality of red and white wines.
+
+
 ## Contributions from Each Group Member
 
-S was responsible for removing outliers and high leverage points, examining vif values, building the logarithmic models, as well as the LASSO model, and computing cross validation. A was responsible for building several of the multiple linear regression models. He interpreted the results of the white wine. Both of us shared our work and thoroughly discussed our results, forming an analysis together.
+S was responsible for removing outliers and high leverage points, examining vif values, building the logarithmic models, as well as the LASSO model, and computing cross validation.
+
+A was responsible for building several of the multiple linear regression models, as well as the polynomial models. He interpreted the results of the white wine.
+
+Both of us shared our work and thoroughly discussed our results, forming an analysis together.
