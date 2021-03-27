@@ -1,7 +1,7 @@
 ---
 title: "Stat 437 Project 1"
 author: 
-     - "Name (SID)"
+     - "NAME (SID)"
 header-includes:
    - \usepackage{bbm}
    - \usepackage{amssymb}
@@ -101,14 +101,14 @@ library(ggplot2)
 set.seed(123)
 
 stdgexpProj1df = as.data.frame(stdgexpProj1)
-subsample3=sample(stdgexpProj1df, size=50, replace=FALSE)
-gap=clusGap(subsample3, kmeans, K.max=10, B=200, nstart=25, iter.max=100)
+subsample2=sample(stdgexpProj1df, size=50, replace=FALSE)
+gap=clusGap(subsample2, kmeans, K.max=10, B=200, nstart=25, iter.max=100)
 k=maxSE(gap$Tab[, "gap"], gap$Tab[,"SE.sim"], method="Tibs2001SEmax")
-km.out=kmeans(subsample3,1,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out=kmeans(subsample2,1,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
 
 km.out$cluster
 
-#View(subsample3)
+#View(subsample2)
 
 # Summary of classification errors
 # In this case, K-means clustering with cluster gap results in a single k cluster.
@@ -133,26 +133,37 @@ library(cluster)
 set.seed(123)
 
 # labels and measurements for 50 random samples
-# TODO: Fix this because it isn't 50 random samples, it's still only 30
 stdgexpProj1df = as.data.frame(stdgexpProj1)
 subsample3=sample(stdgexpProj1df, size=50, replace=FALSE)
-#gap=clusGap(subsample3, kmeans, K.max=10, B=200, nstart=25, iter.max=100)
-#k=maxSE(gap$Tab[, "gap"], gap$Tab[,"SE.sim"], method="Tibs2001SEmax")
-cluster=kmeans(subsample3,1,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
 
 # Obtain the total within-cluster sum of squares W(k) from the output tot.withinss of kmeans
-km.out=kmeans(subsample3,9,nstart=25)
+# with k ranging from 1-9
+km.out=kmeans(subsample3,1,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample3,2,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample3,3,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample3,4,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample3,5,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample3,6,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample3,7,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample3,8,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample3,9,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
 km.out$tot.withinss
 
-# TODO: VISUALIZE THIS -- Provide a plot of W(k) against k for each k between 1 and 10
-# TODO: Compare this estimate with the estimate obtained in Part 1 given by the gap statistic
+# Comment on the accuracy of the two estimates, explain why they are different:
+# As the number of clusters k increases, the total within-cluster sum of squares decreases
+# The first k-clustering model uses the cluster gap, which is not always accurate when
+# working data sets from real life situations.
 
-# Comment on the accuracy of the two estimates, explain why they are different
-
-#ggplot(data=subsample3,aes(cluster, km.out, color='blue'))+geom_point()+theme_bw()
-# TODO: SUMMARIZE
-
-
+# Provide a plot of W(k) against k for each k between 1 and 10
+#ggplot(data=subsample3,aes(km.out, km.out$tot.withinss, colour='blue'))+geom_point()+theme_bw()
 
 ```
 
@@ -161,20 +172,43 @@ km.out$tot.withinss
 ```{R A2-3}
 set.seed(123)
 stdgexpProj1df = as.data.frame(stdgexpProj1)
-subsample3=sample(stdgexpProj1df, size=250, replace=FALSE)
-gap=clusGap(subsample3, kmeans, K.max=10, B=200, nstart=25, iter.max=100)
+subsample4=sample(stdgexpProj1df, size=250, replace=FALSE)
+gap=clusGap(subsample4, kmeans, K.max=10, B=200, nstart=25, iter.max=100)
 k=maxSE(gap$Tab[, "gap"], gap$Tab[,"SE.sim"], method="Tibs2001SEmax")
-km.out=kmeans(subsample3,k,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out=kmeans(subsample4,k,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
 km.out$cluster
-
 # This still provides us with a single cluster from the cluster gap
 
-# K1-10
+# K-means clustering with k=1-9
+stdgexpProj1df = as.data.frame(stdgexpProj1)
+subsample3=sample(stdgexpProj1df, size=250, replace=FALSE)
 
+# Obtain the total within-cluster sum of squares W(k) from the output tot.withinss of kmeans
+# with k ranging from 1-9
+km.out=kmeans(subsample4,1,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample4,2,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample4,3,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample4,4,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample4,5,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample4,6,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample4,7,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample4,8,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
+km.out=kmeans(subsample4,9,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
+km.out$tot.withinss
 
-# TODO: Report findings
-# TODO: Compare findings from Part 1 & Part 2. If there are differences, explain why
-# TODO: Do more genes/features necessarily gives more accurate clustering or classification results?
+# Do more genes/features necessarily gives more accurate clustering or classification results?
+# The results using subsample4 (n=250) are less accurate results than the previous results from the subsample3 (n=50),
+# so no, using more genes/features does not improve the clustering results. The total within-cluster sum of squares again
+# decreases as k clusters increase; however, the sum of squares is much higher in all of the results where n=250.
+
 ```
 
 
@@ -224,8 +258,8 @@ For this task, we will use the same data set you would have downloaded. Please u
 
 ```{r B1}
 library(dplyr)
-file <- 'data.csv'
-df <- read.csv(file)
+library(tidyverse)
+df <- read.csv("data.csv", header=TRUE)
 set.seed(123)
 
 # Filter out genes whose expressions are zero for at least 300 subjects, save the filtered data as gexp2
@@ -240,9 +274,15 @@ gexp3 = gexp2[,gsel]
 # read cancer types
 cancertype = read.csv("labels.csv", row.names=1, header=TRUE)
 # get labels and select 30 samples randomly
+subsample = sample(1:nrow(cancertype), 30)
+# labels and measurements for 30 random samples
+labels1 = cancertype[subsample,]
+# select the corresponding samples from gexp3 and save that as object gexpProj1
+stdgexp2 = gexp3[subsample,]
 
 
-# data(cancertype); n=dim(cancertype)[2]; p=dim(cancertype)[1] # get dimensions
+
+#data(cancertype); n=dim(cancertype)[2]; p=dim(cancertype)[1] # get dimensions
 #rSel=sample(1:p, size=1000, replace=FALSE)
 #chk=colnames(cancertype) %in% c("LUAD", "BRCA")
 #cSel = which(chk==TRUE)
@@ -251,20 +291,10 @@ cancertype = read.csv("labels.csv", row.names=1, header=TRUE)
 
 # TODO: Save as labels2
 
-subsample = sample(1:nrow(cancertype), 30)
-# labels and measurements for 30 random samples
-labels1 = cancertype[subsample,]
-gexpProj1 = gexp3[subsample,]
-# select the corresponding samples from gexp3 and save that as object gexpProj1
-
-View(stdexProjTest)
-
-# Standardize data so that standard deviation is 1, and save as R object stdexpProj1
-stdexpProj1 = scale(gexpProj1) #standardize data
-
 # Pick samples from 'labels.csv' that are for cancer type "LUAD" or "BRCA", save as labels2
 # TODO: FIX this, it currently doesn't work because labels isn't a compatible data type
-labels2 <- filter(labels1, values %in% c("LUAD", "BRCA"))
+#labels2 <- labels1 %in% select_if(col=c("LUAD", "BRCA"))
+
 
 # Pick corresponding gene expressions from gexp3 and save them as object stdgexp2
 
