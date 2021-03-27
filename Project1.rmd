@@ -1,7 +1,7 @@
 ---
 title: "Stat 437 Project 1"
 author: 
-     - student
+     - "Name (SID)"
 header-includes:
    - \usepackage{bbm}
    - \usepackage{amssymb}
@@ -46,7 +46,6 @@ Please use `set.seed(123)` for random sampling via the command `sample`, random 
 * Use the command `scale` to standard the gene expressions for each gene in "gexpProj1", so that they have sample standard deviation 1. Save the standardized data as R object "stdgexpProj1".
 
 ```{r A1}
-# Bring in data
 library(dplyr)
 library(tidyverse)
 
@@ -76,7 +75,7 @@ gexpProj1 = gexp3[subsample,]
 
 # Standardize data so that standard deviation is 1, and save as R object stdgexpProj1
 stdgexpProj1 = scale(gexpProj1) #standardize data
-View(stdgexpProj1)
+#View(stdgexpProj1)
 ```
 
 
@@ -101,6 +100,7 @@ library(plotly)
 library(ggplot2)
 set.seed(123)
 
+stdgexpProj1df = as.data.frame(stdgexpProj1)
 subsample3=sample(stdgexpProj1df, size=50, replace=FALSE)
 gap=clusGap(subsample3, kmeans, K.max=10, B=200, nstart=25, iter.max=100)
 k=maxSE(gap$Tab[, "gap"], gap$Tab[,"SE.sim"], method="Tibs2001SEmax")
@@ -108,11 +108,7 @@ km.out=kmeans(subsample3,1,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong")
 
 km.out$cluster
 
-View(subsample3)
-
-# TODO: VISUALIZE CLASSIFICATION RESULTS
-#plot_ly(subsample3, x=~)
-#plot(subsample3, col=(km.out$cluster), main="K-Means Clustering Results with K=1") #, xlab="", ylab="", pch=20, cex=2)
+#View(subsample3)
 
 # Summary of classification errors
 # In this case, K-means clustering with cluster gap results in a single k cluster.
@@ -120,7 +116,6 @@ View(subsample3)
 # This is because normally a particular type of null distribution is desired when utilizing this approach to clustering,
 # but oftentimes real data will violate the ideal distribution. This is one such case. 
 # As a result of our singular cluster, we can now confirm that the cluster gap is not an effective method to examine this dataset.
-
 
 # table() allows us to see the count of samples for each type of cancer
 table(labels1)
@@ -141,8 +136,8 @@ set.seed(123)
 # TODO: Fix this because it isn't 50 random samples, it's still only 30
 stdgexpProj1df = as.data.frame(stdgexpProj1)
 subsample3=sample(stdgexpProj1df, size=50, replace=FALSE)
-gap=clusGap(subsample3, kmeans, K.max=10, B=200, nstart=25, iter.max=100)
-k=maxSE(gap$Tab[, "gap"], gap$Tab[,"SE.sim"], method="Tibs2001SEmax")
+#gap=clusGap(subsample3, kmeans, K.max=10, B=200, nstart=25, iter.max=100)
+#k=maxSE(gap$Tab[, "gap"], gap$Tab[,"SE.sim"], method="Tibs2001SEmax")
 cluster=kmeans(subsample3,1,iter.max=100, nstart=25, algorithm=c("Hartigan-Wong"))
 
 # Obtain the total within-cluster sum of squares W(k) from the output tot.withinss of kmeans
@@ -151,6 +146,7 @@ km.out$tot.withinss
 
 # TODO: VISUALIZE THIS -- Provide a plot of W(k) against k for each k between 1 and 10
 # TODO: Compare this estimate with the estimate obtained in Part 1 given by the gap statistic
+
 # Comment on the accuracy of the two estimates, explain why they are different
 
 #ggplot(data=subsample3,aes(cluster, km.out, color='blue'))+geom_point()+theme_bw()
