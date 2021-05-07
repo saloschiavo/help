@@ -48,6 +48,11 @@ plot(svmfit, trainingSet, Petal.Width ~ Petal.Length, slice=list(Sepal.Width=3, 
 m=10
 folds=sample(1:m,nrow(trainingSet),replace=TRUE)
 
+# 4.2
+# For 10-fold cross validation
+m=10
+folds=sample(1:m,nrow(trainingSet),replace=TRUE)
+
 # Cross validation with linear kernel
 set.seed(123)
 tune.out=tune(svm, Species~., data = trainingSet, kernel = "linear", ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10, 100)))
@@ -55,8 +60,11 @@ summary(tune.out)
 bestmod=tune.out$best.model
 summary(bestmod)
 
-# TODO: Report classification results
-# TODO: Do you think an SVM with a nonlinear decision boundary should be used for this? It is easy to copy & paste this function with a kernel="radial" if you need to
+# Make predictions
+linear.predict=predict(bestmod, testSet)
+# Report results in table
+table(predict=linear.predict,truth=testSet$Species)
+
 ```
 
 ```{r IrisNN}
