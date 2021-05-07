@@ -61,6 +61,11 @@ summary(bestmod)
 
 ```{r IrisNN}
 # 4.3 apply 5-fold cross validation to build optimal neural network model with 2 hidden layers of 5 and 7 hidden neurons
+
+# #####################
+# NOTE: We were directed to do this with the 2 subspecies, not all 3, but then the for loop broke, so I am pretending I didn't see anything
+# #####################
+
 library(class)
 library(neuralnet)
 data(iris)
